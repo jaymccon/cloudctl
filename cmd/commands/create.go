@@ -1,16 +1,16 @@
-package cmd
+package commands
 
 import (
+	"github.com/jaymccon/cloudctl/cmd"
 	"github.com/spf13/cobra"
 )
 
-// createCmd represents the create command
-var createCmd = &cobra.Command{
+var CreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "creates cloud resources",
 	Long:  `TODO`,
 }
 
 func init() {
-	rootCmd.AddCommand(createCmd)
+	cmd.RootCmd.AddCommand(CreateCmd)
 }

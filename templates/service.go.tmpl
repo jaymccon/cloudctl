@@ -1,0 +1,37 @@
+// This file is generated, do not edit directly.
+
+package services
+
+import "github.com/spf13/cobra"
+
+var {{.CamelCommand}}CreateCmd = &cobra.Command{
+    Use:   "{{.Command}}",
+    Short: "{{.ShortDesc}}",
+    Long: `{{.LongDesc}}`,
+}
+
+{{if .Updateable}}
+var {{.CamelCommand}}UpdateCmd = &cobra.Command{
+    Use:   "{{.Command}}",
+    Short: "{{.ShortDesc}}",
+    Long: `{{.LongDesc}}`,
+}
+{{end}}
+
+var {{.CamelCommand}}DeleteCmd = &cobra.Command{
+    Use:   "{{.Command}}",
+    Short: "{{.ShortDesc}}",
+    Long: `{{.LongDesc}}`,
+}
+
+var {{.CamelCommand}}ReadCmd = &cobra.Command{
+    Use:   "{{.Command}}",
+    Short: "{{.ShortDesc}}",
+    Long: `{{.LongDesc}}`,
+}
+
+var {{.CamelCommand}}ListCmd = &cobra.Command{
+    Use:   "{{.Command}}",
+    Short: "{{.ShortDesc}}",
+    Long: `{{.LongDesc}}`,
+}

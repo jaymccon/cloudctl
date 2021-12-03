@@ -1,0 +1,16 @@
+package services
+
+import cmd "github.com/jaymccon/cloudctl/cmd/commands"
+
+func init() {
+{{range $svc, $upd := .}}
+    cmd.CreateCmd.AddCommand({{$svc}}CreateCmd)
+    {{if $upd}}cmd.UpdateCmd.AddCommand({{$svc}}UpdateCmd)
+    {{end}}cmd.DeleteCmd.AddCommand({{$svc}}DeleteCmd)
+    cmd.ReadCmd.AddCommand({{$svc}}ReadCmd)
+    cmd.ListCmd.AddCommand({{$svc}}ListCmd){{end}}
+}
+
+func Dummy() {
+    return
+}

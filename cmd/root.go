@@ -11,8 +11,8 @@ import (
 var cfgFile string
 var namespace string
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
+// RootCmd represents the base command when called without any subcommands
+var RootCmd = &cobra.Command{
 	Use:   "cloudctl",
 	Short: "A better way to control your cloud",
 	Long: `cloudctl provides a consistent and intuitive interface to AWS and other cloudy services that are available 
@@ -24,27 +24,27 @@ follows the verb-noun adjective pattern popularised by modern cli's like kubectl
 }
 
 func Execute() {
-	cobra.CheckErr(rootCmd.Execute())
+	cobra.CheckErr(RootCmd.Execute())
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
 
 	// global flags
-	flags := rootCmd.PersistentFlags()
+	flags := RootCmd.PersistentFlags()
 	flags.StringVarP(
 		&cfgFile,
 		"config",
 		"c",
 		"",
-		"config file (default is $HOME/.cloudctl.yaml)",
+		"config file (default \"$HOME/.cloudctl.yaml\")",
 	)
 	flags.StringVarP(
 		&namespace,
 		"namespace",
 		"n",
 		"aws",
-		"namespace (default is aws)",
+		"namespace",
 	)
 }
 

@@ -1,3 +1,11 @@
+.fmt
+.test
+.vet
+godoc.zip
+bin/*
+*.cov
+schemas/*
+
 # Binaries for programs and plugins
 cloudctl
 *.exe
