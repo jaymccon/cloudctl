@@ -28,6 +28,7 @@ type CfnSchema struct {
 	PrimaryIdentifier     []string               `json:"primaryIdentifier"`
 	AdditionalIdentifiers [][]string             `json:"additionalIdentifiers"`
 	Handlers              CfnSchemaHandlers      `json:"handlers"`
+	TypeConfiguration     map[string]interface{} `json:"typeConfiguration"`
 }
 
 type CfnSchemaHandlersPermissions struct {
@@ -103,11 +104,23 @@ func (s CfnSchema) IsUpdatable() bool {
 	notUpdatable := append(co, ro...)
 	for _, k := range properties {
 		if !Contains(notUpdatable, k) {
-			fmt.Println(k)
 			return true
 		}
 	}
 	return false
+}
+
+func (s CfnSchema) IsConfigurable() bool {
+	if s.TypeConfiguration == nil {
+		return false
+	}
+	if s.TypeConfiguration["properties"] == nil {
+		return false
+	}
+	if len(s.TypeConfiguration["properties"].(map[string]interface{})) == 0 {
+		return false
+	}
+	return true
 }
 
 func Contains(s []string, str string) bool {

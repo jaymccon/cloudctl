@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/jaymccon/cloudctl/cmd"
-	"github.com/jaymccon/cloudctl/cmd/commands"
 )
 
 const (
@@ -33,5 +32,5 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 func main() {
 	cmd.RootCmd.SetUsageTemplate(usageTemplate)
 	cmd.Execute()
-	commands.Dummy()
+	cmd.Dummy()
 }

@@ -8,13 +8,19 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	version = "0.0.0-alpha1"
+)
+
 var cfgFile string
-var namespace string
+var noPrompts bool
+var async bool
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "cloudctl",
-	Short: "A better way to control your cloud",
+	Version: version,
+	Use:     "cloudctl",
+	Short:   "A better way to control your cloud",
 	Long: `cloudctl provides a consistent and intuitive interface to AWS and other cloudy services that are available 
 in the AWS CloudFormation Registry.
 
@@ -39,12 +45,19 @@ func init() {
 		"",
 		"config file (default \"$HOME/.cloudctl.yaml\")",
 	)
-	flags.StringVarP(
-		&namespace,
-		"namespace",
+	flags.BoolVarP(
+		&noPrompts,
+		"no-prompt",
 		"n",
-		"aws",
-		"namespace",
+		false,
+		"suppress all prompts. DANGER: user error (or s bug in cloudctl) become particularly dangerous as creating, updating, and deleting resources will not require confirmation.",
+	)
+	flags.BoolVarP(
+		&async,
+		"async",
+		"a",
+		false,
+		"Return with a request id immediately for operations that are async and do not block for resource stabilization,",
 	)
 }
 

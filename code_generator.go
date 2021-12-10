@@ -77,7 +77,6 @@ func isUpdatable(schema map[string]interface{}) bool {
 	)
 	for _, k := range properties {
 		if !contains(notUpdatable, k) {
-			fmt.Println(k)
 			return true
 		}
 	}

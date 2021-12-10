@@ -61,12 +61,19 @@ func NewCache(mode string) (*Cache, error) {
 
 func UpdateCache() error {
 	// TODO: create lock to prevent concurrent upgrade operations from racing
-	c, err := NewCache(CacheRWMode)
 	fmt.Println("Downloading schema files...")
+	c, err := NewCache(CacheRWMode)
 	if err != nil {
 		fmt.Printf("ERROR: opening cache: %q\n", err.Error())
 		return err
 	}
+	defer func(cache *bolt.DB) {
+		err := cache.Close()
+		if err != nil {
+			fmt.Printf("ERROR: closing cache error: %s\n", err.Error())
+		}
+	}(c.cache)
+
 	schemas, err := aws.FetchSchemas()
 	if err != nil {
 		fmt.Printf("ERROR: fetching schemas: %q\n", err.Error())
@@ -277,13 +284,15 @@ func GetSchemas() (*map[string]map[string]map[string]CfnSchema, error) {
 		if err != nil {
 			return nil, err
 		}
-		if !keyExists(schemas, *provider) {
-			schemas[*provider] = map[string]map[string]CfnSchema{}
+		if schema != nil {
+			if !keyExists(schemas, *provider) {
+				schemas[*provider] = map[string]map[string]CfnSchema{}
+			}
+			if !keyExists(schemas[*provider], *service) {
+				schemas[*provider][*service] = map[string]CfnSchema{}
+			}
+			schemas[*provider][*service][*resource] = *schema
 		}
-		if !keyExists(schemas[*provider], *service) {
-			schemas[*provider][*service] = map[string]CfnSchema{}
-		}
-		schemas[*provider][*service][*resource] = *schema
 	}
 	return &schemas, nil
 }
@@ -334,6 +343,53 @@ func keyExists(inputMap interface{}, key string) bool {
 		for k, _ := range m2 {
 			if k == key {
 				return true
+			}
+		}
+	}
+	return false
+}
+
+func IsUpdatable(input interface{}) bool {
+	return checkSchema(input, "update")
+}
+
+func IsConfigurable(input interface{}) bool {
+	return checkSchema(input, "configure")
+}
+
+func checkSchema(input interface{}, checkType string) bool {
+	switch input.(type) {
+	case CfnSchema:
+		schema := input.(CfnSchema)
+		if checkType == "update" {
+			return schema.IsUpdatable()
+		} else if checkType == "configure" {
+			return schema.IsConfigurable()
+		}
+	case map[string]CfnSchema:
+		for _, i := range input.(map[string]CfnSchema) {
+			if checkType == "update" {
+				if i.IsUpdatable() {
+					return true
+				}
+			} else if checkType == "configure" {
+				if i.IsConfigurable() {
+					return true
+				}
+			}
+		}
+	case map[string]map[string]CfnSchema:
+		for _, s := range input.(map[string]map[string]CfnSchema) {
+			for _, i := range s {
+				if checkType == "update" {
+					if i.IsUpdatable() {
+						return true
+					}
+				} else if checkType == "configure" {
+					if i.IsConfigurable() {
+						return true
+					}
+				}
 			}
 		}
 	}

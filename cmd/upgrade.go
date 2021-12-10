@@ -1,7 +1,6 @@
-package commands
+package cmd
 
 import (
-	"github.com/jaymccon/cloudctl/cmd"
 	"github.com/jaymccon/cloudctl/data"
 
 	"github.com/spf13/cobra"
@@ -10,7 +9,6 @@ import (
 var UpgradeCmd = &cobra.Command{
 	Use:   "upgrade",
 	Short: "upgrade cloudctl resource definitions",
-	Long:  `TODO`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := data.UpdateCache()
 		if err != nil {
@@ -20,5 +18,5 @@ var UpgradeCmd = &cobra.Command{
 }
 
 func init() {
-	cmd.RootCmd.AddCommand(UpgradeCmd)
+	RootCmd.AddCommand(UpgradeCmd)
 }
