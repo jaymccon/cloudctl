@@ -241,7 +241,7 @@ func init() {
 						Short: short,
 						Long:  long,
 						Run: func(cmd *cobra.Command, args []string) {
-							Edit()
+							Edit("abcd: efgh", "yaml")
 							fmt.Println("TODO: implementation")
 						},
 					}
