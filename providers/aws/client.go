@@ -2,7 +2,9 @@ package aws
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/alecthomas/chroma/quick"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/retry"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -11,7 +13,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/cheggaaa/pb/v3"
+	"gopkg.in/yaml.v3"
 	"log"
+	"os"
 	"sync"
 	"time"
 )
@@ -125,6 +129,35 @@ func DeleteResource(cc *cloudcontrol.Client, typeName string, id string, async b
 	fmt.Printf("%s delete %s for resource with the identifier %q\n", typeName, pe.OperationStatus, id)
 	if async && !isFinished(*pe) {
 		fmt.Printf("Request token: %s\n", *pe.RequestToken)
+	}
+	return nil
+}
+
+func ReadResource(cc *cloudcontrol.Client, typeName string, id string, async bool) error {
+	resp, err := cc.GetResource(
+		context.TODO(),
+		&cloudcontrol.GetResourceInput{TypeName: &typeName, Identifier: &id},
+	)
+	if err != nil {
+		fmt.Printf("ERROR: %q", err.Error())
+		return err
+	}
+	properties := *resp.ResourceDescription.Properties
+	jsonProps := map[string]interface{}{}
+	err = json.Unmarshal([]byte(properties), &jsonProps)
+	if err != nil {
+		fmt.Printf("ERROR: %s", err.Error())
+		return err
+	}
+	yamlDoc, err := yaml.Marshal(jsonProps)
+	if err != nil {
+		fmt.Printf("ERROR: %s", err.Error())
+		return err
+	}
+	err = quick.Highlight(os.Stdout, string(yamlDoc), "yaml", "terminal16m", "pygments")
+	if err != nil {
+		fmt.Printf("ERROR: %s", err.Error())
+		return err
 	}
 	return nil
 }
@@ -319,5 +352,12 @@ func AsyncCcCreateResource(client cloudcontrol.Client, typeName string, desiredS
 	err := CreateResource(&client, typeName, &desiredState, async)
 	if err != nil {
 		fmt.Printf("creating %s failed: %s", typeName, err.Error())
+	}
+}
+
+func AsyncCcReadResource(client cloudcontrol.Client, typeName string, id string, async bool) {
+	err := ReadResource(&client, typeName, id, async)
+	if err != nil {
+		fmt.Printf("reading %s failed: %s", typeName, err.Error())
 	}
 }

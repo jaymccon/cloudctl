@@ -6,7 +6,6 @@ import (
 	"gopkg.in/yaml.v3"
 	"io/fs"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -339,24 +338,22 @@ func Edit(initialContent string, fileExt string) ([]byte, error) {
 	}
 	err = editor.Wait()
 	if err != nil {
-		log.Printf("Error while editing. Error: %s\n", err.Error())
-	} else {
-		log.Printf("Successfully edited.")
+		fmt.Printf("Error while editing. Error: %s\n", err.Error())
 	}
 	readFile, err := ioutil.ReadFile(tmpFile.Name())
 	if err != nil {
-		log.Printf("ERROR: %s", err.Error())
+		fmt.Printf("ERROR: %s", err.Error())
 		return nil, err
 	}
 	desiredState := map[string]interface{}{}
 	err = yaml.Unmarshal(readFile, desiredState)
 	if err != nil {
-		log.Printf("ERROR: %s", err.Error())
+		fmt.Printf("ERROR: %s", err.Error())
 		return nil, err
 	}
 	jsonBytes, err := json.Marshal(desiredState)
 	if err != nil {
-		log.Printf("ERROR: %s", err.Error())
+		fmt.Printf("ERROR: %s", err.Error())
 		return nil, err
 	}
 	return jsonBytes, nil

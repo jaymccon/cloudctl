@@ -3,6 +3,7 @@ module github.com/jaymccon/cloudctl
 go 1.17
 
 require (
+	github.com/alecthomas/chroma v0.9.4
 	github.com/aws/aws-sdk-go-v2 v1.11.2
 	github.com/aws/aws-sdk-go-v2/config v1.10.3
 	github.com/aws/aws-sdk-go-v2/service/cloudcontrol v1.3.2
@@ -27,6 +28,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.5.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.6.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.11.0 // indirect
+	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect

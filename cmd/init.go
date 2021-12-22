@@ -159,8 +159,12 @@ func init() {
 					Short: short,
 					Long:  long,
 					Run: func(cmd *cobra.Command, args []string) {
-						fmt.Println("TODO: implementation")
+						if len(args) != 1 {
+							fmt.Println("read command requires an identifier to be supplied as a single argument")
+						}
+						crudl.ReadResource(cmd.Annotations["typeName"], args[0], noPrompts, async)
 					},
+					ValidArgsFunction: completeId,
 				}
 				if updatable {
 					ResourceUpdateCmds[provider][service][resource] = &cobra.Command{
@@ -192,28 +196,7 @@ func init() {
 					Run: func(cmd *cobra.Command, args []string) {
 						crudl.DeleteResources(cmd.Annotations["typeName"], args, noPrompts, async)
 					},
-					ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-						// this was in the example from cobra docs, but it's not clear whether it's needed
-						//if len(args) != 0 {
-						//	return nil, cobra.ShellCompDirectiveNoFileComp
-						//}
-						resources, err := awsProvider.ListResource(cmd.Annotations["typeName"])
-						if err != nil {
-							fmt.Printf("ERROR: %q\n", err.Error())
-							return nil, cobra.ShellCompDirectiveNoFileComp
-						}
-						headers := append([]interface{}{"Identifier"}, crudl.GetTableHeaders(*resources)...)
-						var completeList []string
-						for _, r := range *resources {
-							row := crudl.GetRow(r, headers)
-							completeStr := row[0].(string) + "\t"
-							for _, i := range row[1:] {
-								completeStr = completeStr + i.(string) + " "
-							}
-							completeList = append(completeList, completeStr)
-						}
-						return completeList, cobra.ShellCompDirectiveNoFileComp
-					},
+					ValidArgsFunction: completeId,
 				}
 				ResourceListCmds[provider][service][resource] = &cobra.Command{
 					Use: resource,
@@ -259,4 +242,28 @@ func init() {
 			}
 		}
 	}
+}
+
+func completeId(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	// this was in the example from cobra docs, but it's not clear whether it's needed
+	//if len(args) != 0 {
+	//	return nil, cobra.ShellCompDirectiveNoFileComp
+	//}
+	fmt.Println(cmd.Parent().Parent().Parent().Name())
+	resources, err := awsProvider.ListResource(cmd.Annotations["typeName"])
+	if err != nil {
+		fmt.Printf("ERROR: %q\n", err.Error())
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	headers := append([]interface{}{"Identifier"}, crudl.GetTableHeaders(*resources)...)
+	var completeList []string
+	for _, r := range *resources {
+		row := crudl.GetRow(r, headers)
+		completeStr := row[0].(string) + "\t"
+		for _, i := range row[1:] {
+			completeStr = completeStr + i.(string) + " "
+		}
+		completeList = append(completeList, completeStr)
+	}
+	return completeList, cobra.ShellCompDirectiveNoFileComp
 }
