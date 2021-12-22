@@ -10,11 +10,11 @@ require (
 	github.com/aws/smithy-go v1.9.0
 	github.com/cheggaaa/pb/v3 v3.0.8
 	github.com/fatih/color v1.10.0
-	github.com/goccy/go-yaml v1.9.4
 	github.com/rodaine/table v1.0.1
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 	go.etcd.io/bbolt v1.3.6
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
 
 require (
@@ -45,7 +45,6 @@ require (
 	github.com/subosito/gotenv v1.2.0 // indirect
 	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect
 	golang.org/x/text v0.3.6 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

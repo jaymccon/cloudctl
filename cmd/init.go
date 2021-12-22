@@ -145,7 +145,7 @@ func init() {
 					Short: short,
 					Long:  long,
 					Run: func(cmd *cobra.Command, args []string) {
-						fmt.Println("TODO: implementation")
+						CreateEdit(cmd.Annotations["typeName"])
 					},
 				}
 				ResourceReadCmds[provider][service][resource] = &cobra.Command{
@@ -241,7 +241,6 @@ func init() {
 						Short: short,
 						Long:  long,
 						Run: func(cmd *cobra.Command, args []string) {
-							Edit("abcd: efgh", "yaml")
 							fmt.Println("TODO: implementation")
 						},
 					}

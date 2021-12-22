@@ -129,6 +129,46 @@ func DeleteResource(cc *cloudcontrol.Client, typeName string, id string, async b
 	return nil
 }
 
+func CreateResource(cc *cloudcontrol.Client, typeName string, desiredState *string, async bool) error {
+	resp, err := cc.CreateResource(
+		context.TODO(),
+		&cloudcontrol.CreateResourceInput{TypeName: &typeName, DesiredState: desiredState},
+	)
+	if err != nil {
+		fmt.Printf("ERROR: %q", err.Error())
+		return err
+	}
+	// nil timeout will wait until operation completes
+	var timeout *time.Time = nil
+	timeoutTime := time.Now().Add(noWaitSleep)
+	if async {
+		// most errors come back really quickly, so we wait a bit even if wait is disabled
+		timeout = &timeoutTime
+	}
+	pe, err := waitForComplete(*cc, *resp.ProgressEvent, timeout)
+	if err != nil {
+		fmt.Printf("ERROR: %q", err.Error())
+		return err
+	}
+	if pe.OperationStatus == typesCC.OperationStatusFailed {
+		if pe.Identifier == nil {
+			fmt.Printf("ERROR: %s failed without returning an identifier. [%s] %s\n", typeName, pe.ErrorCode, *pe.StatusMessage)
+		} else {
+			fmt.Printf("ERROR: %s with identifier %q failed. [%s] %s\n", typeName, pe.Identifier, pe.ErrorCode, *pe.StatusMessage)
+		}
+
+	}
+	if pe.Identifier == nil {
+		fmt.Printf("%s create %s for resource with no identifier\n", typeName, pe.OperationStatus)
+	} else {
+		fmt.Printf("%s create %s for resource with the identifier %q\n", typeName, pe.OperationStatus, *pe.Identifier)
+	}
+	if async && !isFinished(*pe) {
+		fmt.Printf("Request token: %s\n", *pe.RequestToken)
+	}
+	return nil
+}
+
 func isFinished(pe typesCC.ProgressEvent) bool {
 	var finalStatuses = []typesCC.OperationStatus{
 		typesCC.OperationStatusSuccess,
@@ -257,7 +297,7 @@ func AsyncCcDeleteResource(client cloudcontrol.Client, typeName string, resource
 	for i := 0; i < concurrentAwsCalls; i++ {
 		go func() {
 			for input := range inputCh {
-				err := DeleteResource(&client, input, typeName, async)
+				err := DeleteResource(&client, typeName, input, async)
 				resultCh <- deleteResourceErrors{input, err}
 			}
 			wg.Done()
@@ -270,7 +310,14 @@ func AsyncCcDeleteResource(client cloudcontrol.Client, typeName string, resource
 	}()
 	for e := range resultCh {
 		if e.err != nil {
-			fmt.Printf("deleting %s with identifier %s failed: %s", typeName, e.id, e.err.Error())
+			fmt.Printf("deleting %s with identifier %s failed: %s\n", typeName, e.id, e.err.Error())
 		}
+	}
+}
+
+func AsyncCcCreateResource(client cloudcontrol.Client, typeName string, desiredState string, async bool) {
+	err := CreateResource(&client, typeName, &desiredState, async)
+	if err != nil {
+		fmt.Printf("creating %s failed: %s", typeName, err.Error())
 	}
 }
