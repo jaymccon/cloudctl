@@ -1,6 +1,6 @@
 # cloudctl
 
-`cloudctl` is an experiemental  cli for the cloud based on [AWS Cloud Conrol API](https://aws.amazon.com/blogs/aws/announcing-aws-cloud-control-api/). It aims to provide a consistent and user-centric cli experience.
+`cloudctl` is an experiemental  cli for the cloud based on [AWS Cloud Control API](https://aws.amazon.com/blogs/aws/announcing-aws-cloud-control-api/). It aims to provide a consistent and user-centric cli experience.
 
 **Project state:** pre-alpha 
 
