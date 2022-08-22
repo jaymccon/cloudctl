@@ -75,9 +75,17 @@ func FetchSchemas() (*map[string][]byte, error) {
 }
 
 func NewCcClient() (*cloudcontrol.Client, error) {
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRetryer(func() aws.Retryer {
-		return retry.AddWithMaxAttempts(retry.NewStandard(), 20)
-	}))
+	logMode := aws.LogRetries
+	if os.Getenv("CLOUDCTL_DEBUG") != "" {
+		logMode |= aws.LogRequestWithBody | aws.LogResponseWithBody
+	}
+	cfg, err := config.LoadDefaultConfig(
+		context.TODO(),
+		config.WithRetryer(func() aws.Retryer {
+			return retry.AddWithMaxAttempts(retry.NewStandard(), 20)
+		}),
+		config.WithClientLogMode(logMode),
+	)
 	if err != nil {
 		fmt.Printf("ERROR: %q", err.Error())
 		return nil, err
