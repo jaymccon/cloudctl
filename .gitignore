@@ -1,3 +1,5 @@
+oryxBuildBinary
+build/
 .fmt
 .test
 .vet
@@ -22,3 +24,41 @@ cloudctl
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# C++ specific ignores
+*.o
+*.obj
+*.gch
+*.pch
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+*.exe
+*.out
+*.app
+*.i
+*.ii
+*.s
+*.su
+*.lo
+*.la
+*.loT
+*.lai
+*.mod
+*.cmd
+*.d
+*.Tpo
+*.Tpo
+*.Plo
+*.Plo
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+compile_commands.json
+install_manifest.txt
